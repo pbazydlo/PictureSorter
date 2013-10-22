@@ -5,9 +5,67 @@
     xmlns:local="using:PictureSorter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:PictureSorter.ViewModel"
     mc:Ignorable="d">
-
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-
+    <Page.DataContext>
+        <vm:MainViewModel/>
+    </Page.DataContext>
+        <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="12*"/>
+            <ColumnDefinition Width="139*"/>
+            <ColumnDefinition Width="332"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Picture Sorter" Style="{StaticResource HeaderTextStyle}" Grid.Row="1" Grid.Column="1"/>
+        <TextBlock Text="How To" Style="{StaticResource SubheaderTextStyle}" Grid.Row="2" Grid.Column="1"/>
+        <TextBlock Text="Actions" Style="{StaticResource SubheaderTextStyle}" Grid.Row="2" 
+                   Grid.Column="2"/>
+        <!--How To section-->
+        <StackPanel Grid.Column="1" Grid.Row="3" Margin="10 5 25 5">
+            <TextBlock Style="{StaticResource SubheaderTextStyle}">1) Pick source folder</TextBlock>
+            <TextBlock Style="{StaticResource BaselineTextStyle}">This will be the folder from which pictures will be imported.</TextBlock>
+            <TextBlock Style="{StaticResource SubheaderTextStyle}">2) Pick destination folder</TextBlock>
+            <TextBlock Style="{StaticResource BaselineTextStyle}">This will be the folder to which pictures will be saved after renaming.</TextBlock>
+            <TextBlock Style="{StaticResource SubheaderTextStyle}">3) Choose fallback date type</TextBlock>
+            <TextBlock Style="{StaticResource BaselineTextStyle}">Choose which date should be used in case 'DateTaken' doesn't exist:</TextBlock>
+            <TextBlock Style="{StaticResource BaselineTextStyle}" Margin="30 0 0 0">FileCreated - date when picture was created IN THE SELECTED FOLDER</TextBlock>
+            <TextBlock Style="{StaticResource BaselineTextStyle}" Margin="30 0 0 0">LastModified - date when LAST picture modifications were saved</TextBlock>
+            <TextBlock Style="{StaticResource SubheaderTextStyle}">4) Press sort button to begin</TextBlock>
+            <TextBlock Style="{StaticResource BaselineTextStyle}">While processing application will copy pictures from SOURCE FOLDER to DESTINATION FOLDER and rename them so that standard ordering by file name will reflect the order in which photos were taken.</TextBlock>
+        </StackPanel>
+        <!--Actions section-->
+        <StackPanel Grid.Column="2" Grid.Row="3" Orientation="Vertical" Margin="10 5 25 5">
+            <ProgressBar Visibility="{Binding ProgressBarVisibility}"/>
+            <TextBlock Text="1) Source folder" Style="{StaticResource ListTitleTextStyle}"/>
+            <Button>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}"/>
+                    <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Pick source folder</TextBlock>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="2) Destination folder" Style="{StaticResource ListTitleTextStyle}"/>
+            <Button>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}"/>
+                    <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Pick destination folder</TextBlock>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="3) Choose fallback date" Style="{StaticResource ListTitleTextStyle}"/>
+            <ComboBox ItemsSource="{Binding FallbackDates}" SelectedItem="{Binding SelectedFallbackDate}"/>
+            <Button HorizontalAlignment="Right" Margin="0 15 0 0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}" Text="&#xe201;"/>
+                    <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Sort!</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>
