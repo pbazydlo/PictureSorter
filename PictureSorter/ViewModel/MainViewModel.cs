@@ -29,6 +29,8 @@ namespace PictureSorter.ViewModel
     {
         private readonly string[] SupportedExtensions = new string[] { ".png", ".jpg", ".bmp", ".gif" };
 
+        private bool isSortCommandCanceled;
+
         private string selectedFallbackDate;
         public string SelectedFallbackDate
         {
@@ -79,6 +81,48 @@ namespace PictureSorter.ViewModel
             }
         }
 
+        private bool isProgressBarIndeterminate;
+        public bool IsProgressBarIndeterminate
+        {
+            get { return this.isProgressBarIndeterminate; }
+            set
+            {
+                if (value != this.isProgressBarIndeterminate)
+                {
+                    this.isProgressBarIndeterminate = value;
+                    this.RaisePropertyChanged(() => this.IsProgressBarIndeterminate);
+                }
+            }
+        }
+
+        private int progressBarValue;
+        public int ProgressBarValue
+        {
+            get { return this.progressBarValue; }
+            set
+            {
+                if (value != this.progressBarValue)
+                {
+                    this.progressBarValue = value;
+                    this.RaisePropertyChanged(() => this.ProgressBarValue);
+                }
+            }
+        }
+
+        private int progressBarMaxValue;
+        public int ProgressBarMaxValue
+        {
+            get { return this.progressBarMaxValue; }
+            set
+            {
+                if (value != this.progressBarMaxValue)
+                {
+                    this.progressBarMaxValue = value;
+                    this.RaisePropertyChanged(() => this.ProgressBarMaxValue);
+                }
+            }
+        }
+
         private string sourceFolderName;
         public string SourceFolderName
         {
@@ -103,6 +147,7 @@ namespace PictureSorter.ViewModel
                 {
                     this.isSourceFolderPicked = value;
                     this.RaisePropertyChanged(() => this.IsSourceFolderPicked);
+                    this.RaisePropertyChanged(() => this.SortCommand);
                 }
             }
         }
@@ -131,6 +176,25 @@ namespace PictureSorter.ViewModel
                 {
                     this.isDestinationFolderPicked = value;
                     this.RaisePropertyChanged(() => this.IsDestinationFolderPicked);
+                    this.RaisePropertyChanged(() => this.SortCommand);
+                }
+            }
+        }
+
+        private bool isFallbackTypeSelectionEnabled;
+        public bool IsFallbackTypeSelectionEnabled
+        {
+            get { return this.isFallbackTypeSelectionEnabled; }
+            set
+            {
+                if (value != this.isFallbackTypeSelectionEnabled)
+                {
+                    this.isFallbackTypeSelectionEnabled = value;
+                    this.RaisePropertyChanged(() => this.IsFallbackTypeSelectionEnabled);
+                    this.RaisePropertyChanged(() => this.PickSourceFolderCommand);
+                    this.RaisePropertyChanged(() => this.PickDestinationFolderCommand);
+                    this.RaisePropertyChanged(() => this.SortCommand);
+                    this.RaisePropertyChanged(() => this.CancelSortCommand);
                 }
             }
         }
@@ -156,11 +220,13 @@ namespace PictureSorter.ViewModel
             this.isSourceFolderPicked = false;
             this.destinationFolderName = string.Empty;
             this.isDestinationFolderPicked = false;
+            this.isFallbackTypeSelectionEnabled = true;
+            this.isSortCommandCanceled = false;
         }
 
         public ICommand PickSourceFolderCommand
         {
-            get { return new RelayCommand(() => this.PickSourceFolder()); }
+            get { return new RelayCommand(() => this.PickSourceFolder(), () => this.IsFallbackTypeSelectionEnabled); }
         }
 
         private async void PickSourceFolder()
@@ -192,7 +258,7 @@ namespace PictureSorter.ViewModel
 
         public ICommand PickDestinationFolderCommand
         {
-            get { return new RelayCommand(() => this.PickDestinationFolder()); }
+            get { return new RelayCommand(() => this.PickDestinationFolder(), () => this.IsFallbackTypeSelectionEnabled); }
         }
 
         private async void PickDestinationFolder()
@@ -233,6 +299,73 @@ namespace PictureSorter.ViewModel
             }
 
             return unsnapped;
+        }
+
+        public ICommand SortCommand
+        {
+            get
+            {
+                return new RelayCommand(() => this.Sort(), () => this.IsDestinationFolderPicked && this.IsSourceFolderPicked && this.IsFallbackTypeSelectionEnabled);
+            }
+        }
+
+        private async void Sort()
+        {
+            this.isSortCommandCanceled = false;
+            this.IsFallbackTypeSelectionEnabled = false;
+            this.ProgressBarVisibility = Visibility.Visible;
+            this.IsProgressBarIndeterminate = true;
+            var sourceFolder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync("PickedSourceFolder");
+            var destinationFolder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync("PickedDestinationFolder");
+            var files = await sourceFolder.GetFilesAsync();
+            this.ProgressBarValue = 0;
+            this.ProgressBarMaxValue = files.Count;
+            this.IsProgressBarIndeterminate = false;
+            foreach (var file in files)
+            {
+                if (this.isSortCommandCanceled)
+                {
+                    break;
+                }
+
+                var fileProperties = await files[0].Properties.GetImagePropertiesAsync();
+                string newName = "";
+                DateTime chosenDate = file.DateCreated.LocalDateTime;
+                if (fileProperties.DateTaken > new DateTime(1800, 01, 01))
+                {
+                    chosenDate = fileProperties.DateTaken.LocalDateTime;
+                }
+                else
+                {
+                    switch (this.selectedFallbackDateAsEnum)
+                    {
+                        case FallbackDatesEnum.FileCreated:
+                            chosenDate = file.DateCreated.LocalDateTime;
+                            break;
+                        case FallbackDatesEnum.LastModified:
+                            var basicProperties = await file.GetBasicPropertiesAsync();
+                            chosenDate = basicProperties.DateModified.LocalDateTime;
+                            break;
+                    }
+                }
+
+                newName = string.Format("{0}_{1}", chosenDate.ToString("yyyyMMddHHmmssfff"), file.Name);
+
+                this.ProgressBarValue++;
+                await Task.Delay(500);
+                //await file.CopyAsync(destinationFolder, "", NameCollisionOption.GenerateUniqueName);
+            }
+
+            this.ProgressBarVisibility = Visibility.Collapsed;
+            this.IsFallbackTypeSelectionEnabled = true;
+        }
+
+        public ICommand CancelSortCommand
+        {
+            get
+            {
+                return new RelayCommand(() => this.isSortCommandCanceled = true, () => !this.IsFallbackTypeSelectionEnabled);
+            }
         }
 
         private enum FallbackDatesEnum

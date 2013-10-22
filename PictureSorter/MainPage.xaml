@@ -43,7 +43,8 @@
         </StackPanel>
         <!--Actions section-->
         <StackPanel Grid.Column="2" Grid.Row="3" Orientation="Vertical" Margin="10 5 25 5">
-            <ProgressBar Visibility="{Binding ProgressBarVisibility}"/>
+            <ProgressBar Visibility="{Binding ProgressBarVisibility}" IsIndeterminate="{Binding IsProgressBarIndeterminate}"
+                         Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaxValue}"/>
             <TextBlock Text="1) Source folder" Style="{StaticResource ListTitleTextStyle}"/>
             <Button Command="{Binding PickSourceFolderCommand}">
                 <StackPanel Orientation="Horizontal">
@@ -63,13 +64,21 @@
             <TextBlock Text="{Binding DestinationFolderName}" Visibility="{Binding IsDestinationFolderPicked, Converter={StaticResource boolToVisibilityConverter}}"
                        Style="{StaticResource BaselineTextStyle}"/>
             <TextBlock Text="3) Choose fallback date" Style="{StaticResource ListTitleTextStyle}"/>
-            <ComboBox ItemsSource="{Binding FallbackDates}" SelectedItem="{Binding SelectedFallbackDate}"/>
-            <Button HorizontalAlignment="Right" Margin="0 15 0 0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}" Text="&#xe201;"/>
-                    <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Sort!</TextBlock>
-                </StackPanel>
-            </Button>
+            <ComboBox ItemsSource="{Binding FallbackDates}" SelectedItem="{Binding SelectedFallbackDate}" IsEnabled="{Binding IsFallbackTypeSelectionEnabled}"/>
+            <StackPanel HorizontalAlignment="Right" Margin="0 15 0 0" Orientation="Horizontal">
+                <Button Command="{Binding CancelSortCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}" Text="&#xE10A;"/>
+                        <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Cancel</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding SortCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}" Text="&#xe201;"/>
+                        <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Sort!</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>
