@@ -24,7 +24,7 @@
             <RowDefinition/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Picture Sorter" Style="{StaticResource HeaderTextStyle}" Grid.Row="1" Grid.Column="1"/>
+        <TextBlock Text="Photo Sorter" Style="{StaticResource HeaderTextStyle}" Grid.Row="1" Grid.Column="1"/>
         <TextBlock Text="How To" Style="{StaticResource SubheaderTextStyle}" Grid.Row="2" Grid.Column="1"/>
         <TextBlock Text="Actions" Style="{StaticResource SubheaderTextStyle}" Grid.Row="2" 
                    Grid.Column="2"/>
