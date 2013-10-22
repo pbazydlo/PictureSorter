@@ -328,7 +328,7 @@ namespace PictureSorter.ViewModel
                     break;
                 }
 
-                var fileProperties = await files[0].Properties.GetImagePropertiesAsync();
+                var fileProperties = await file.Properties.GetImagePropertiesAsync();
                 string newName = "";
                 DateTime chosenDate = file.DateCreated.LocalDateTime;
                 if (fileProperties.DateTaken > new DateTime(1800, 01, 01))
@@ -352,8 +352,8 @@ namespace PictureSorter.ViewModel
                 newName = string.Format("{0}_{1}", chosenDate.ToString("yyyyMMddHHmmssfff"), file.Name);
 
                 this.ProgressBarValue++;
-                await Task.Delay(500);
-                //await file.CopyAsync(destinationFolder, "", NameCollisionOption.GenerateUniqueName);
+                //await Task.Delay(500);
+                await file.CopyAsync(destinationFolder, newName, NameCollisionOption.GenerateUniqueName);
             }
 
             this.ProgressBarVisibility = Visibility.Collapsed;
