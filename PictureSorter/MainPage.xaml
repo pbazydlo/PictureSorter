@@ -45,19 +45,23 @@
         <StackPanel Grid.Column="2" Grid.Row="3" Orientation="Vertical" Margin="10 5 25 5">
             <ProgressBar Visibility="{Binding ProgressBarVisibility}"/>
             <TextBlock Text="1) Source folder" Style="{StaticResource ListTitleTextStyle}"/>
-            <Button>
+            <Button Command="{Binding PickSourceFolderCommand}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}"/>
                     <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Pick source folder</TextBlock>
                 </StackPanel>
             </Button>
+            <TextBlock Text="{Binding SourceFolderName}" Visibility="{Binding IsSourceFolderPicked, Converter={StaticResource boolToVisibilityConverter}}"
+                       Style="{StaticResource BaselineTextStyle}"/>
             <TextBlock Text="2) Destination folder" Style="{StaticResource ListTitleTextStyle}"/>
-            <Button>
+            <Button Command="{Binding PickDestinationFolderCommand}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource OpenFileAppBarTextblockIconStyle}"/>
                     <TextBlock Style="{StaticResource AppBarTextblockTextStyle}">Pick destination folder</TextBlock>
                 </StackPanel>
             </Button>
+            <TextBlock Text="{Binding DestinationFolderName}" Visibility="{Binding IsDestinationFolderPicked, Converter={StaticResource boolToVisibilityConverter}}"
+                       Style="{StaticResource BaselineTextStyle}"/>
             <TextBlock Text="3) Choose fallback date" Style="{StaticResource ListTitleTextStyle}"/>
             <ComboBox ItemsSource="{Binding FallbackDates}" SelectedItem="{Binding SelectedFallbackDate}"/>
             <Button HorizontalAlignment="Right" Margin="0 15 0 0">
