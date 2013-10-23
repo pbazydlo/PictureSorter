@@ -151,7 +151,7 @@
     <!-- Button styles -->
     
     <!--
-        TextButtonStyle is used to style a Button using subheader-styled text with no other adornment.  There
+        TextButtonStyle is used to style Button using subheader-styled text with no other adornment.  There
         are two styles that are based on TextButtonStyle (TextPrimaryButtonStyle and TextSecondaryButtonStyle)
         which are used in the GroupedItemsPage as a group header and in the FileOpenPickerPage for triggering
         commands.
